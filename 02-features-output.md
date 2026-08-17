@@ -68,30 +68,46 @@ Key design choices:
 
 ---
 
-## 2.4 Shared feature backbone
+## 2.4 Relationship Between Segmentation and Depth
 
-Both tasks benefit from a **shared encoder** that learns general visual features:
+Although semantic segmentation and depth estimation are performed using separate models (U-Net and MiDaS), both tasks rely on similar visual cues extracted from the input image.
 
 ```
-Input image
+Input Image
      │
-     ▼
-┌────────────┐
-│  Shared    │   ← pretrained on ImageNet / similar
-│  Encoder   │
-└──┬─────┬───┘
-   │     │
-   ▼     ▼
-Seg     Depth
-Head    Head
+ ┌───┴───┐
+ │       │
+ ▼       ▼
+U-Net   MiDaS
+ │       │
+ ▼       ▼
+Seg.    Depth
+Mask    Map
 ```
 
-**Advantages:**
-- Fewer parameters than two separate networks.
-- Depth cues (edges, geometry) help segmentation; semantic cues (class identity) help depth.
-- Joint training can regularise both heads.
+### Complementary Information
 
----
+- **Segmentation** answers: *What is in the scene?*
+- **Depth estimation** answers: *How far is each object from the camera?*
+
+When combined, they provide a more complete understanding of the traffic environment.
+
+For example:
+
+| Object | Segmentation Output | Depth Output |
+|----------|----------|----------|
+| Car | Car | 12 m |
+| Pedestrian | Person | 6 m |
+| Road | Road | Drivable surface |
+| Building | Building | 40 m |
+
+### Benefits of Combining Both Tasks
+
+- Improve scene understanding in complex traffic environments.
+- Provide both semantic and geometric information.
+- Support applications such as autonomous driving, robot navigation, and intelligent transportation systems.
+
+Although the two models are trained separately, their outputs can be integrated to obtain richer scene-level information than either task alone.
 
 ## 2.5 Feature → Output summary
 
@@ -101,3 +117,20 @@ Head    Head
 | Texture gradients | Surface orientation | Scene layout | ✓ | ✓ |
 | — | Vanishing point | Global geometry | — | ✓ |
 | — | Object boundaries | Instance extent | ✓ | ✓ |
+---
+
+## 2.6 Out of Scope
+
+The feature analysis presented in this section focuses on common visual cues used for semantic segmentation and monocular depth estimation.
+
+The following aspects are outside the scope of this project:
+
+- **Video-based temporal features** such as object motion, optical flow, and trajectory information.
+- **Multi-view geometry** from stereo cameras or multiple viewpoints.
+- **LiDAR, Radar, or sensor-fusion features** that provide direct depth measurements.
+- **Instance-level reasoning**, such as distinguishing between individual objects of the same class.
+- **3D object pose estimation** and full 3D scene reconstruction.
+- **Weather and illumination robustness analysis** under extreme conditions (heavy rain, fog, snow, or nighttime scenes).
+- **Explainability of learned features**, since deep neural networks learn many internal representations automatically.
+
+Therefore, this project only considers visual features extracted from a single RGB street-view image for semantic segmentation and monocular depth estimation.
