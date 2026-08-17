@@ -24,21 +24,36 @@ Together these form a basic **scene understanding** system: *what* is in the ima
 ## Input → Output diagram
 
 ```
-┌─────────────┐
-│  Street      │
-│  image       │
-│  (H×W×3)    │
-└──────┬──────┘
-       │
-       ├──► Semantic Segmentation  (H×W)  class per pixel
-       │
-       └──► Depth Map              (H×W)  distance per pixel (monocular)
+┌─────────────────┐
+│ Street Image    │
+│ (H × W × 3)     │
+└────────┬────────┘
+         │
+ ┌───────┴────────┐
+ │                │
+ ▼                ▼
+
+U-Net           MiDaS
+(Segmentation)  (Depth)
+
+ ▼                ▼
+
+Semantic       Depth
+Mask           Map
+
+      │
+      ▼
+
+Scene Understanding
 ```
 
 ---
 
 ## Assumptions & constraints
-1. **Monocular input** – single RGB image (no stereo, no LiDAR).
-2. **Street scenes** – road, vehicles, sky dominate; generalisation to indoor scenes is out of scope.
-3. **Single forward pass** – real-time or near-real-time inference preferred.
-4. **Evaluation on standard benchmarks** – Cityscapes (segmentation), KITTI (depth).
+1. **Monocular input** – only a single RGB image is used..
+2. **Street scenes** – road environments containing vehicles, pedestrians, buildings, and traffic infrastructure.
+3. **Separate prediction models** – segmentation and depth estimation are performed using dedicated models (U-Net and MiDaS).
+4. **Near real-time inference preferred** – for practical traffic-scene analysis.
+5. **Evaluation on public benchmarks:**
+- Cityscapes for semantic segmentation.
+- KITTI for depth estimation.
