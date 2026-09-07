@@ -1,32 +1,56 @@
-# 1. Problem Definition
+# 1. Định nghĩa bài toán
 
-## Task
-**Segmentation + Depth → Scene Understanding**
+## Nhiệm vụ
 
-Given a single street-view image, produce two dense predictions:
+**Phân đoạn ngữ nghĩa (Semantic Segmentation) + Ước lượng độ sâu (Depth Estimation) → Hiểu ngữ cảnh cảnh vật (Scene Understanding)**
 
-| Output | Description |
-|---|---|
-| Semantic segmentation mask | Per-pixel class label (road, car, sky, building, pedestrian, …) |
-| Depth map | Per-pixel distance from camera |
+Cho một ảnh đường phố duy nhất, hệ thống cần tạo ra hai đầu ra dự đoán dày đặc (dense predictions):
 
-Together these form a basic **scene understanding** system: *what* is in the image and *where* it is in 3-D.
+| Đầu ra | Mô tả |
+|---------|---------|
+| Semantic Segmentation Mask | Gán nhãn lớp cho từng pixel (đường, xe hơi, bầu trời, tòa nhà, người đi bộ, ...) |
+| Depth Map | Ước lượng khoảng cách từ camera đến từng pixel |
 
----
+Kết hợp hai đầu ra này giúp hệ thống hiểu được ngữ cảnh của cảnh vật, bao gồm:
 
-## Why it matters
-- **Autonomous driving** – vehicles need to know drivable surfaces and surrounding objects plus their distance.
-- **Robotics / navigation** – a robot must segment free space and estimate distance to obstacles.
-- **AR / mixed reality** – realistic insertion of virtual objects requires both layout and depth.
+- **Trong ảnh có những đối tượng nào?**
+- **Các đối tượng đó cách camera bao xa?**
 
 ---
 
-## Input → Output diagram
+## Ý nghĩa và ứng dụng
 
-```
+### Xe tự lái (Autonomous Driving)
+
+Xe cần xác định:
+
+- Khu vực có thể di chuyển (drivable area).
+- Các đối tượng xung quanh như xe hơi, người đi bộ, biển báo,...
+- Khoảng cách đến các đối tượng để hỗ trợ điều hướng an toàn.
+
+### Robot và hệ thống dẫn đường
+
+Robot cần:
+
+- Nhận biết không gian trống để di chuyển.
+- Xác định vị trí vật cản.
+- Ước lượng khoảng cách đến vật cản để tránh va chạm.
+
+### Thực tế tăng cường (AR / Mixed Reality)
+
+Việc chèn các đối tượng ảo vào môi trường thực đòi hỏi:
+
+- Hiểu bố cục cảnh vật.
+- Biết độ sâu của từng vùng trong ảnh để hiển thị tự nhiên và chính xác.
+
+---
+
+## Luồng xử lý đầu vào – đầu ra
+
+```text
 ┌─────────────────┐
-│ Street Image    │
-│ (H × W × 3)     │
+│  Ảnh đường phố  │
+│   (H × W × 3)   │
 └────────┬────────┘
          │
  ┌───────┴────────┐
@@ -34,26 +58,15 @@ Together these form a basic **scene understanding** system: *what* is in the ima
  ▼                ▼
 
 U-Net           MiDaS
-(Segmentation)  (Depth)
+(Phân đoạn)    (Ước lượng độ sâu)
 
  ▼                ▼
 
-Semantic       Depth
-Mask           Map
+Segmentation    Depth
+Mask            Map
 
       │
       ▼
 
 Scene Understanding
-```
-
----
-
-## Assumptions & constraints
-1. **Monocular input** – only a single RGB image is used..
-2. **Street scenes** – road environments containing vehicles, pedestrians, buildings, and traffic infrastructure.
-3. **Separate prediction models** – segmentation and depth estimation are performed using dedicated models (U-Net and MiDaS).
-4. **Near real-time inference preferred** – for practical traffic-scene analysis.
-5. **Evaluation on public benchmarks:**
-- Cityscapes for semantic segmentation.
-- KITTI for depth estimation.
+(Hiểu ngữ cảnh cảnh vật)

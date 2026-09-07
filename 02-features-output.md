@@ -1,78 +1,133 @@
-# 2. Features → Output Mapping
+# 2. Ánh xạ Đặc trưng → Đầu ra (Features → Output Mapping and Out of scope)
 
-This document maps low-level and mid-level image features to the two target outputs.
-
----
-
-## 2.1 Key image features exploited
-
-| Feature type | What it captures | Relevant output |
-|---|---|---|
-| **Colour / intensity** | Road is dark grey, sky is blue, vegetation is green | Segmentation |
-| **Texture** | Asphalt vs. grass vs. metal have different texture patterns | Segmentation |
-| **Edges / gradients** | Object boundaries, horizon line | Segmentation + Depth discontinuities |
-| **Perspective / vanishing point** | Parallel lines converge → distance cue | Depth |
-| **Relative size** | Same-class objects appear smaller when far away | Depth |
-| **Occlusion ordering** | Nearer objects block farther ones | Depth |
-| **Shadows / shading** | Light direction reveals surface orientation | Depth |
-| **Semantic priors** | "Sky is always above the horizon", "road is at bottom" | Both |
+Phần này mô tả cách các đặc trưng hình ảnh ở mức thấp và mức trung gian được sử dụng để tạo ra hai đầu ra chính của hệ thống: Semantic Segmentation và Depth Map.
 
 ---
 
-## 2.2 Output 1 — Semantic Segmentation
+## 2.1 Các đặc trưng hình ảnh được khai thác
 
-### Per-pixel features → class label
-
-```
-pixel features (colour, texture, local context)
-        │
-        ▼
-   Encoder  ──►  high-level feature map  (semantic context)
-        │
-        ▼
-   Decoder  ──►  per-pixel logits  (num_classes channels)
-        │
-        ▼
-   argmax  ──►  class index ∈ {road, car, sky, building, …}
-```
-
-Key design choices:
-- **Multi-scale context** – a pixel's class depends on both local appearance and global scene layout.
-- **Skip connections** – preserve fine boundaries lost during downsampling.
-- **CRF / refinement** – optional post-processing for sharper masks.
-
-### Target classes (Cityscapes, 19 classes)
-`road, sidewalk, building, wall, fence, pole, traffic light, traffic sign, vegetation, terrain, sky, person, rider, car, truck, bus, train, motorcycle, bicycle`
+| Loại đặc trưng | Thông tin thể hiện | Đầu ra liên quan |
+|----------|----------|----------|
+| **Màu sắc / Cường độ sáng** | Đường thường có màu xám đậm, bầu trời màu xanh, cây cối màu xanh lá | Semantic Segmentation |
+| **Texture (Kết cấu bề mặt)** | Nhựa đường, cỏ và kim loại có kết cấu khác nhau | Semantic Segmentation |
+| **Biên / Gradient** | Ranh giới đối tượng, đường chân trời | Segmentation và Depth |
+| **Phối cảnh / Điểm hội tụ** | Các đường song song hội tụ tạo tín hiệu về khoảng cách | Depth Estimation |
+| **Kích thước tương đối** | Các vật thể cùng loại sẽ nhỏ hơn khi ở xa | Depth Estimation |
+| **Quan hệ che khuất** | Vật gần thường che khuất vật xa | Depth Estimation |
+| **Bóng đổ và độ sáng tối** | Hướng ánh sáng giúp suy ra hình dạng bề mặt | Depth Estimation |
+| **Kiến thức ngữ nghĩa (Semantic Priors)** | Bầu trời thường ở phía trên, mặt đường thường ở phía dưới | Cả hai nhiệm vụ |
 
 ---
 
-## 2.3 Output 2 — Depth Map
+## 2.2 Đầu ra 1 – Semantic Segmentation
 
-### Per-pixel features → scalar depth
+### Từ đặc trưng ảnh đến nhãn lớp của từng pixel
 
-```
-pixel features (colour, texture, perspective cues)
+```text
+Đặc trưng ảnh
+(màu sắc, texture, ngữ cảnh cục bộ)
         │
         ▼
-   Encoder  ──►  feature representation
+     Encoder
         │
-        ├──► Depth head  ──►  log-depth / disparity  (H×W×1)
+        ▼
+ Bản đồ đặc trưng mức cao
+ (Semantic Feature Map)
         │
-        └──► (optional) Confidence map  (H×W×1)
+        ▼
+     Decoder
+        │
+        ▼
+  Per-pixel Logits
+ (N kênh tương ứng N lớp)
+        │
+        ▼
+      Argmax
+        │
+        ▼
+ Nhãn lớp của từng pixel
+ (Road, Car, Sky, ...)
 ```
 
-Key design choices:
-- **Scale-invariant loss** – predict relative depth when absolute scale is unavailable.
-- **Multi-scale supervision** – auxiliary losses at intermediate decoder stages improve gradient flow.
-- **Edge-aware refinement** – sharpen depth discontinuities at object boundaries.
+### Các lựa chọn thiết kế quan trọng
+
+- **Multi-scale Context (Ngữ cảnh đa tỷ lệ)**  
+  Một pixel không thể được phân loại chính xác nếu chỉ nhìn riêng lẻ. Mô hình cần quan sát cả vùng lân cận và bố cục toàn cảnh.
+
+- **Skip Connections**  
+  Truyền thông tin chi tiết từ Encoder sang Decoder nhằm bảo toàn biên và các chi tiết nhỏ bị mất trong quá trình giảm kích thước ảnh.
+
+- **CRF / Refinement (Tùy chọn)**  
+  Một số hệ thống sử dụng bước hậu xử lý để làm sắc nét ranh giới giữa các lớp.
+
+### Các lớp mục tiêu (Cityscapes – 19 lớp)
+
+```text
+road
+sidewalk
+building
+wall
+fence
+pole
+traffic light
+traffic sign
+vegetation
+terrain
+sky
+person
+rider
+car
+truck
+bus
+train
+motorcycle
+bicycle
+```
 
 ---
 
-## 2.4 Relationship Between Segmentation and Depth
+## 2.3 Đầu ra 2 – Depth Map
 
-Although semantic segmentation and depth estimation are performed using separate models (U-Net and MiDaS), both tasks rely on similar visual cues extracted from the input image.
+### Từ đặc trưng ảnh đến giá trị độ sâu
 
+```text
+Đặc trưng ảnh
+(màu sắc, texture, phối cảnh)
+        │
+        ▼
+     Encoder
+        │
+        ▼
+ Biểu diễn đặc trưng
+        │
+        ├──► Depth Head
+        │        │
+        │        ▼
+        │   Depth Map
+        │ (H × W × 1)
+        │
+        └──► Confidence Map
+              (Tùy chọn)
 ```
+
+### Các lựa chọn thiết kế quan trọng
+
+- **Scale-Invariant Loss**  
+  Mô hình tập trung học quan hệ gần – xa giữa các đối tượng thay vì phụ thuộc hoàn toàn vào khoảng cách tuyệt đối.
+
+- **Multi-scale Supervision**  
+  Hàm mất mát được tính ở nhiều mức độ phân giải khác nhau giúp quá trình huấn luyện ổn định hơn.
+
+- **Edge-aware Refinement**  
+  Giữ cho các biên độ sâu sắc nét tại ranh giới đối tượng.
+
+---
+
+## 2.4 Mối quan hệ giữa Semantic Segmentation và Depth Estimation
+
+Mặc dù Semantic Segmentation và Depth Estimation được thực hiện bằng hai mô hình riêng biệt (U-Net và MiDaS), cả hai đều khai thác các đặc trưng thị giác tương tự từ cùng một ảnh đầu vào.
+
+```text
 Input Image
      │
  ┌───┴───┐
@@ -85,52 +140,64 @@ Seg.    Depth
 Mask    Map
 ```
 
-### Complementary Information
+### Thông tin bổ sung cho nhau
 
-- **Segmentation** answers: *What is in the scene?*
-- **Depth estimation** answers: *How far is each object from the camera?*
+- **Semantic Segmentation** trả lời câu hỏi:
 
-When combined, they provide a more complete understanding of the traffic environment.
+```text
+Trong ảnh có những đối tượng nào?
+```
 
-For example:
+- **Depth Estimation** trả lời câu hỏi:
 
-| Object | Segmentation Output | Depth Output |
+```text
+Các đối tượng đó cách camera bao xa?
+```
+
+Khi kết hợp hai kết quả, hệ thống có thể hiểu ngữ cảnh giao thông đầy đủ hơn.
+
+Ví dụ:
+
+| Đối tượng | Kết quả Segmentation | Kết quả Depth |
 |----------|----------|----------|
-| Car | Car | 12 m |
-| Pedestrian | Person | 6 m |
-| Road | Road | Drivable surface |
-| Building | Building | 40 m |
+| Xe hơi | Car | 12 m |
+| Người đi bộ | Person | 6 m |
+| Đường | Road | Khu vực có thể di chuyển |
+| Tòa nhà | Building | 40 m |
 
-### Benefits of Combining Both Tasks
+### Lợi ích khi kết hợp hai nhiệm vụ
 
-- Improve scene understanding in complex traffic environments.
-- Provide both semantic and geometric information.
-- Support applications such as autonomous driving, robot navigation, and intelligent transportation systems.
+- Nâng cao khả năng hiểu ngữ cảnh giao thông.
+- Cung cấp đồng thời thông tin ngữ nghĩa và hình học.
+- Hỗ trợ các ứng dụng như xe tự lái, robot di chuyển và giao thông thông minh.
 
-Although the two models are trained separately, their outputs can be integrated to obtain richer scene-level information than either task alone.
+Mặc dù U-Net và MiDaS được huấn luyện độc lập, kết quả của chúng có thể được kết hợp để tạo ra thông tin phong phú hơn so với từng nhiệm vụ riêng lẻ.
 
-## 2.5 Feature → Output summary
-
-| Low-level feature | Mid-level feature | High-level feature | Segmentation | Depth |
-|---|---|---|---|---|
-| RGB colour | Edges, corners | Object parts | ✓ | ✓ |
-| Texture gradients | Surface orientation | Scene layout | ✓ | ✓ |
-| — | Vanishing point | Global geometry | — | ✓ |
-| — | Object boundaries | Instance extent | ✓ | ✓ |
 ---
 
-## 2.6 Out of Scope
+## 2.5 Tóm tắt mối quan hệ giữa đặc trưng và đầu ra
 
-The feature analysis presented in this section focuses on common visual cues used for semantic segmentation and monocular depth estimation.
+| Đặc trưng mức thấp | Đặc trưng mức trung gian | Đặc trưng mức cao | Segmentation | Depth |
+|----------|----------|----------|----------|----------|
+| Màu sắc RGB | Biên, góc | Bộ phận đối tượng | ✓ | ✓ |
+| Gradient kết cấu | Hướng bề mặt | Bố cục cảnh | ✓ | ✓ |
+| — | Điểm hội tụ | Hình học toàn cảnh | — | ✓ |
+| — | Ranh giới đối tượng | Phạm vi vật thể | ✓ | ✓ |
 
-The following aspects are outside the scope of this project:
+---
 
-- **Video-based temporal features** such as object motion, optical flow, and trajectory information.
-- **Multi-view geometry** from stereo cameras or multiple viewpoints.
-- **LiDAR, Radar, or sensor-fusion features** that provide direct depth measurements.
-- **Instance-level reasoning**, such as distinguishing between individual objects of the same class.
-- **3D object pose estimation** and full 3D scene reconstruction.
-- **Weather and illumination robustness analysis** under extreme conditions (heavy rain, fog, snow, or nighttime scenes).
-- **Explainability of learned features**, since deep neural networks learn many internal representations automatically.
+## 2.6 Phạm vi không thực hiện (Out of Scope)
 
-Therefore, this project only considers visual features extracted from a single RGB street-view image for semantic segmentation and monocular depth estimation.
+Phần phân tích đặc trưng trong đề tài chỉ tập trung vào các tín hiệu thị giác được sử dụng cho Semantic Segmentation và Monocular Depth Estimation.
+
+Các nội dung sau không nằm trong phạm vi nghiên cứu:
+
+- Khai thác thông tin theo thời gian từ video như chuyển động đối tượng, Optical Flow hoặc Tracking.
+- Hình học đa góc nhìn (Multi-view Geometry) từ nhiều camera hoặc Stereo Vision.
+- Dữ liệu từ LiDAR, Radar hoặc các phương pháp Sensor Fusion.
+- Phân biệt từng cá thể riêng biệt của cùng một lớp đối tượng (Instance Segmentation).
+- Ước lượng tư thế 3D của vật thể hoặc tái tạo toàn bộ cảnh 3D.
+- Đánh giá khả năng hoạt động trong các điều kiện thời tiết cực đoan như mưa lớn, sương mù, tuyết hoặc ban đêm.
+- Phân tích khả năng giải thích (Explainability) của các đặc trưng được học bởi mạng nơ-ron sâu.
+
+Do đó, đề tài chỉ sử dụng các đặc trưng được trích xuất từ một ảnh RGB đường phố duy nhất để thực hiện Semantic Segmentation và Monocular Depth Estimation.
