@@ -1,166 +1,186 @@
-# 3. Solution → Technology → AI Architecture
+## 3.1. Kiến trúc tổng thể (Overall Architecture)
 
----
+Hệ thống nhận đầu vào là một ảnh RGB đường phố và thực hiện hai nhiệm vụ chính:
 
-## 3.1 Overall pipeline
+- Semantic Segmentation: phân chia ảnh thành các vùng đối tượng như đường, xe, người, bầu trời,...
+- Monocular Depth Estimation: ước lượng khoảng cách tương đối từ camera đến các vật thể trong ảnh.
 
-```
-┌──────────────────────────────────────────────────────────┐
-│                    STREET IMAGE (H×W×3)                  │
-└──────────────────────────┬───────────────────────────────┘
-                           │
-                           ▼
-              ┌────────────────────────┐
-              │   SHARED ENCODER       │
-              │   (Deep CNN / ViT)     │
-              │   e.g. ResNet-50       │
-              └─────┬──────────┬───────┘
-                    │          │
-          ┌─────────┘          └─────────┐
-          ▼                              ▼
-┌──────────────────┐          ┌──────────────────┐
-│  SEGMENTATION    │          │  DEPTH           │
-│  DECODER         │          │  DECODER         │
-│  (FPN / UNet)    │          │  (FPN / UNet)    │
-└────────┬─────────┘          └────────┬─────────┘
-         │                             │
-         ▼                             ▼
-  Segmentation Map              Depth Map
-  (H×W, 19 classes)            (H×W, 1 channel)
+### Pipeline
+
+```text
+Ảnh đường phố RGB
+        │
+        ├───────────────┐
+        │               │
+        ▼               ▼
+      U-Net           MiDaS
+        │               │
+        ▼               ▼
+Segmentation Map    Depth Map
+        │               │
+        └───────┬───────┘
+                ▼
+        Scene Understanding
 ```
 
----
+Trong đó:
 
-## 3.2 AI models considered
+- U-Net được sử dụng cho bài toán Semantic Segmentation.
+- MiDaS được sử dụng cho bài toán Monocular Depth Estimation.
+- Hai kết quả được kết hợp để giúp hệ thống hiểu được ngữ cảnh và khoảng cách tương đối của các đối tượng trong cảnh giao thông.
 
-### Semantic Segmentation
+## 3.2. Các mô hình AI được sử dụng (AI Models Used)
 
-| Model | Type | Backbone | mIoU (Cityscapes) | Speed |
-|---|---|---|---|---|
-| **DeepLab v3+** | CNN + ASPP | ResNet-101 | ~80 % | ~6 FPS |
-| **HRNet** | High-res CNN | HRNet-W48 | ~82 % | ~5 FPS |
-| **SegFormer** | Transformer | MiT-B3 | ~83 % | ~15 FPS |
-| **Mask2Former** | Transformer (mask decoder) | Swin-L | ~84 % | ~8 FPS |
+### 3.2.1. Phân đoạn ngữ nghĩa – U-Net (Semantic Segmentation – U-Net)
 
-**Choice: DeepLab v3+** — good balance of accuracy, simplicity, and pre-trained availability.
+U-Net là kiến trúc mạng CNN phổ biến cho bài toán Semantic Segmentation. Mô hình gồm hai phần chính:
 
-### Monocular Depth Estimation
+- Encoder: trích xuất các đặc trưng từ ảnh đầu vào.
+- Decoder: khôi phục kích thước ảnh và tạo ra bản đồ phân vùng.
 
-| Model | Type | Backbone | AbsRel (KITTI) | Speed |
-|---|---|---|---|---|
-| **MiDaS v3.1** | CNN + Transformer hybrid | DPT-Large | ~0.059 | ~10 FPS |
-| **DPT (Dense Prediction Transformer)** | ViT encoder | ViT-L | ~0.062 | ~8 FPS |
-| **AdaBins** | CNN + bins | EfficientNet-B5 | ~0.058 | ~12 FPS |
-| **Depth Anything V2** | ViT encoder | ViT-L | ~0.055 | ~12 FPS |
+U-Net sử dụng Skip Connection để truyền các đặc trưng từ Encoder sang Decoder, giúp giữ lại thông tin chi tiết về vị trí và hình dạng của đối tượng.
 
-**Choice: MiDaS v3.1 / Depth Anything V2** — state-of-the-art, robust to domain shifts.
+Trong dự án, U-Net được sử dụng để phân vùng các lớp trong ảnh giao thông, ví dụ:
 
----
+- Road
+- Car
+- Person
+- Sky
+- Building
+- Vegetation
 
-## 3.3 Technology stack
+Kết quả đầu ra là một Segmentation Map, trong đó mỗi pixel được gán vào một lớp tương ứng.
 
-```
-Layer              Tool / Library
-─────────────────────────────────────
-Language           Python 3.10+
-Deep learning      PyTorch 2.x
-Segmentation       segmentation_models_pytorch (SMP)
-  or mmsegmentation
-Depth              timm + MiDaS / Depth-Anything weights
-Data pipeline      torchvision / albumentations
-Training           PyTorch Lightning or plain training loop
-Logging            Weights & Biases / TensorBoard
-Evaluation         torchmetrics / scikit-learn
-Deployment         ONNX export / TorchScript
-```
+### 3.2.2. Ước lượng độ sâu đơn ảnh – MiDaS (Monocular Depth Estimation – MiDaS)
 
----
+MiDaS là mô hình Deep Learning dùng để ước lượng độ sâu từ một ảnh đơn.
 
-## 3.4 Training strategy
+Mô hình nhận một ảnh RGB và tạo ra Depth Map thể hiện độ sâu tương đối của các vùng trong ảnh.
 
-### 3.4.1 Joint multi-task training
+- Vùng gần camera thường có giá trị depth khác với vùng ở xa.
+- Depth Map giúp hệ thống nhận biết tương quan khoảng cách giữa các vật thể.
+- MiDaS có thể sử dụng pretrained weights nên phù hợp với bài toán thử nghiệm trên ảnh đường phố.
 
-```
-Total Loss = λ_seg · L_seg(ŷ_seg, y_seg) + λ_depth · L_depth(ŷ_d, y_d)
-```
+## 3.3. Công nghệ sử dụng (Technology Stack)
 
-| Loss | Formula | Notes |
-|---|---|---|
-| **L_seg** | Cross-entropy + Dice | Handles class imbalance (road dominant) |
-| **L_depth** | Scale-invariant log loss (SILog) | Robust to absolute scale |
-| **λ_seg** | 1.0 | Tuned via grid search |
-| **λ_depth** | 1.0 | Tuned via grid search |
+Hệ thống sử dụng các công nghệ chính:
 
-### 3.4.2 Data augmentation
+- Python: ngôn ngữ lập trình chính.
+- PyTorch: xây dựng và thực hiện mô hình Deep Learning.
+- Torchvision: hỗ trợ xử lý ảnh và các thành phần liên quan đến Computer Vision.
+- NumPy: xử lý dữ liệu dạng mảng.
+- OpenCV/PIL: đọc và tiền xử lý ảnh.
+- Matplotlib: trực quan hóa kết quả.
+- Git/GitHub: quản lý và chia sẻ mã nguồn của nhóm.
 
-- Random horizontal flip
-- Random resize / crop (512×1024)
-- Color jitter (brightness, contrast, saturation)
-- Random Gaussian blur
-- Random occlusion (cutout / random erasing)
+## 3.4. Chiến lược huấn luyện (Training Strategy)
 
-### 3.4.3 Training schedule
+### Phân đoạn ngữ nghĩa (Semantic Segmentation)
 
-```
-Optimizer        AdamW  (lr = 1e-4, weight_decay = 1e-4)
-Scheduler        Cosine annealing with warm-up (5 epochs)
-Epochs           100
-Batch size       8 (per GPU)
-Mixed precision  AMP (fp16)
+Mô hình U-Net được huấn luyện trên dữ liệu Semantic Segmentation. Mỗi ảnh đầu vào đi kèm với Ground Truth Mask.
+
+Quá trình huấn luyện gồm:
+
+```text
+Ảnh đầu vào
+     ↓
+Tiền xử lý
+     ↓
+U-Net
+     ↓
+Segmentation Prediction
+     ↓
+So sánh với Ground Truth
+     ↓
+Tính Loss
+     ↓
+Cập nhật trọng số
 ```
 
----
+Loss có thể sử dụng Cross Entropy Loss để đo sai lệch giữa kết quả dự đoán và nhãn thực tế.
 
-## 3.5 Inference flow
+### Ước lượng độ sâu (Depth Estimation)
 
-```python
-# Pseudocode
-img = load_image("street.jpg")                    # (3, H, W)
-img = preprocess(img)                              # normalize, resize
+Đối với Depth Estimation, mô hình MiDaS có thể sử dụng pretrained weights để tạo Depth Map từ ảnh RGB.
 
-seg_logits = seg_model(img)                        # (num_classes, H, W)
-seg_mask   = seg_logits.argmax(dim=0)              # (H, W)
+Kết quả Depth Map được đưa qua bước xử lý và trực quan hóa để dễ dàng quan sát sự khác biệt về khoảng cách giữa các vùng trong ảnh.
 
-depth_pred = depth_model(img)                      # (1, H, W)
-depth_map  = depth_pred.squeeze(0)                 # (H, W)
+## 3.5. Quy trình suy luận (Inference Process)
 
-overlay = visualize(seg_mask, depth_map)           # side-by-side / coloured
-save(overlay, "output.png")
+Khi đưa một ảnh đường phố mới vào hệ thống:
+
+1. Đọc ảnh RGB.
+2. Tiền xử lý và resize ảnh.
+3. Đưa ảnh vào mô hình U-Net.
+4. Tạo Segmentation Map.
+5. Đưa ảnh vào mô hình MiDaS.
+6. Tạo Depth Map.
+7. Trực quan hóa các kết quả.
+8. Kết hợp thông tin Segmentation và Depth để hỗ trợ Scene Understanding.
+
+```text
+Input Image
+     │
+     ├──► U-Net ──► Segmentation Map
+     │
+     └──► MiDaS ──► Depth Map
+                       │
+                       ▼
+              Scene Understanding
 ```
 
----
+## 3.6. Đánh giá mô hình (Model Evaluation)
 
-## 3.6 Hardware requirements
+### Phân đoạn ngữ nghĩa (Semantic Segmentation)
 
-| Component | Minimum | Recommended |
-|---|---|---|
-| GPU VRAM | 6 GB | 12 GB+ (RTX 3080 / A100) |
-| RAM | 16 GB | 32 GB |
-| Storage | 50 GB (data + checkpoints) | 100 GB SSD |
+Các chỉ số có thể sử dụng:
 
----
+- Pixel Accuracy: tỷ lệ pixel được dự đoán chính xác.
+- IoU (Intersection over Union): mức độ chồng lấp giữa vùng dự đoán và Ground Truth.
+- mIoU (mean IoU): IoU trung bình trên các lớp.
 
-## 3.7 File / module layout (implementation phase)
+### Ước lượng độ sâu (Depth Estimation)
 
-```
+Các chỉ số thường được sử dụng:
+
+- AbsRel (Absolute Relative Error)
+- SqRel (Squared Relative Error)
+- RMSE (Root Mean Square Error)
+- δ < 1.25
+
+Các chỉ số này giúp đánh giá mức độ chính xác của Depth Map so với Ground Truth.
+
+## 3.7. Cấu trúc các thành phần trong dự án (Project Structure)
+
+Các thành phần chính của dự án gồm:
+
+```text
 cv-project/
-├── data/
-│   ├── cityscapes/          # segmentation GT
-│   └── kitti/               # depth GT
-├── src/
-│   ├── dataset.py           # dataloader for both tasks
-│   ├── models/
-│   │   ├── encoder.py       # shared backbone
-│   │   ├── seg_head.py      # segmentation decoder
-│   │   └── depth_head.py    # depth decoder
-│   ├── losses.py            # CE+Dice, SILog
-│   ├── train.py             # training loop
-│   ├── evaluate.py          # metrics
-│   └── inference.py         # single-image demo
-├── configs/
-│   └── default.yaml         # hyperparameters
-├── notebooks/
-│   └── demo.ipynb           # visualisation notebook
+│
+├── models/
+│   └── unet/
+│       ├── model.py
+│       └── inference.py
+│
+├── preprocessing/
+│
+├── evaluation/
+│   ├── depth_metrics.py
+│   ├── difficulty_analysis.py
+│   ├── pipeline_metrics.py
+│   └── segmentation_metrics.py
+│
+├── visualization/
+│
+├── scene_understanding/
+│
+├── config.py
+├── main.py
 ├── requirements.txt
-└── README.md
+│
+├── 01-problem-definition.md
+├── 02-features-output.md
+└── 03-solution-tech-ai.md
 ```
+
+Cấu trúc này giúp tách riêng các thành phần của hệ thống như mô hình AI, tiền xử lý dữ liệu, đánh giá kết quả và trực quan hóa.
