@@ -246,14 +246,14 @@ class UNetInference:
                 prediction = _resize_nearest_class_ids(prediction, source_size)
             prediction = prediction.squeeze(0).cpu()
 
-        if not return_confidence:
-            return prediction
+            if not return_confidence:
+                return prediction
 
-        probabilities = torch.softmax(logits, dim=1)
-        confidence = probabilities.max(dim=1).values
-        if self.image_size is not None:
-            confidence = _resize_bilinear(confidence, source_size)
-        confidence = confidence.squeeze(0).cpu()
+            probabilities = torch.softmax(logits, dim=1)
+            confidence = probabilities.max(dim=1).values
+            if self.image_size is not None:
+                confidence = _resize_bilinear(confidence, source_size)
+            confidence = confidence.squeeze(0).cpu()
         return prediction, confidence
 
     def predict_batch(self, images: torch.Tensor) -> torch.Tensor:

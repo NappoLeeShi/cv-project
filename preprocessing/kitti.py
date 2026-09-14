@@ -22,7 +22,7 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
-from typing import Sequence
+from typing import Any, Callable, Sequence
 
 import numpy as np
 from PIL import Image
@@ -66,6 +66,7 @@ class KittiDepthDataset(Dataset):
         depth_cap_m: float | None = None,
         max_samples: int | None = None,
         missing_policy: str = "error",
+        stem_key: Any | None = None,
     ) -> None:
         if missing_policy not in ("error", "skip"):
             raise DatasetError(f"missing_policy must be 'error' or 'skip', got: {missing_policy!r}")
@@ -79,6 +80,7 @@ class KittiDepthDataset(Dataset):
         self.depth_cap_m = float(depth_cap_m) if depth_cap_m is not None else None
         self.max_samples = max_samples
         self.missing_policy = missing_policy
+        self.stem_key = stem_key
 
         if self.scale_mm <= 0:
             raise DatasetError(f"scale_mm must be positive, got: {self.scale_mm}")
@@ -86,8 +88,8 @@ class KittiDepthDataset(Dataset):
         self.image_dir = self._resolve_dir(root, image_dir, "images")
         self.depth_dir = self._resolve_dir(root, depth_dir, "depth")
 
-        self.image_map = self._build_stem_map(self.image_dir, "image")
-        self.depth_map = self._build_stem_map(self.depth_dir, "depth")
+        self.image_map = self._build_stem_map(self.image_dir, "image", stem_key=self.stem_key)
+        self.depth_map = self._build_stem_map(self.depth_dir, "depth", stem_key=self.stem_key)
 
         self.image_transform = ImageTransform(size=tuple(image_size)) if image_size is not None else ImageTransform()
         self.depth_transform = DepthTransform(size=tuple(image_size)) if image_size is not None else DepthTransform()
@@ -131,6 +133,7 @@ class KittiDepthDataset(Dataset):
             depth_cap_m=get(block, "depth_cap_m"),
             max_samples=get(block, "max_samples"),
             missing_policy=get(block, "missing_policy", "error"),
+            stem_key=get(block, "stem_key"),
         )
 
     @staticmethod
@@ -141,11 +144,15 @@ class KittiDepthDataset(Dataset):
         return candidate
 
     @staticmethod
-    def _build_stem_map(directory: Path, kind: str) -> dict[str, Path]:
+    def _build_stem_map(
+        directory: Path, kind: str, stem_key: Callable[[str], str] | None = None
+    ) -> dict[str, Path]:
         stem_map: dict[str, Path] = {}
         for path in sorted(directory.rglob("*.png")):
             rel = path.relative_to(directory)
             stem = str(rel.with_suffix("")).replace("\\", "/")
+            if stem_key is not None:
+                stem = stem_key(stem)
             if stem in stem_map:
                 raise DatasetError(f"Ambiguous {kind} paths for stem {stem!r}: {stem_map[stem]} and {path}")
             stem_map[stem] = path
@@ -199,6 +206,8 @@ class KittiDepthDataset(Dataset):
         skipped = 0
         for token in ids:
             stem = self._stem_from_tree_id(token)
+            if self.stem_key is not None:
+                stem = self.stem_key(stem)
             image_path = self.image_map.get(stem)
             depth_path = self.depth_map.get(stem)
             if image_path is None or depth_path is None:

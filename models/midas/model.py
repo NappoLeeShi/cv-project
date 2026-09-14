@@ -100,7 +100,7 @@ def _load_weights(backend: nn.Module, weights_path: str | Path, device: torch.de
     if not path.is_file():
         raise MiDaSError(f"Weights file not found: {path}")
     try:
-        checkpoint = torch.load(path, map_location=backend.device, weights_only=True)
+        checkpoint = torch.load(path, map_location=device, weights_only=True)
     except Exception as exc:
         raise MiDaSError(f"Failed to load MiDaS weights from {path}: {exc}") from exc
     state = _extract_state_dict(checkpoint, str(path))

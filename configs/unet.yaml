@@ -3,14 +3,20 @@
 
 data:
   cityscapes_root: data/cityscapes
-  image_dir: data/cityscapes/images
-  label_dir: data/cityscapes/labels
+  image_dir: images/leftImg8bit
+  label_dir: labels/gtFine
   split_dir:
     train: train
     val: val
     test: test
-  image_size: [512, 1024]
-  # image_size is [H, W]. Cityscapes native 1024x2048 is downscaled to 512x1024.
+  image_size: [256, 512]
+  # image_size is [H, W]. Cityscapes native 1024x2048 is downscaled.
+  # Image -> bilinear resize; mask -> nearest-neighbour resize (see Dataset).
+  # The original Step 12 default was [512, 1024] with batch_size 4; that needs
+  # a larger GPU and OOMs on the ~4 GB card (batch 1 @ 512x1024 already peaks
+  # ~3 GiB). Current [256, 512] + batch 1 peaks < 1 GiB.
+  # Restore the original settings via CLI:
+  #   --image-size 512 1024 --batch-size 4   (needs more VRAM or AMP)
   normalization:
     mean: [0.485, 0.456, 0.406]
     std: [0.229, 0.224, 0.225]
@@ -43,6 +49,24 @@ train:
     hflip: true
     random_scale_crop: true
     color_jitter: true
+
+# Step 12 U-Net training.
+training:
+  epochs: 20
+  batch_size: 1        # original was 4 — OOMs on this 4 GB GPU
+  learning_rate: 0.0001
+  weight_decay: 0.00001
+  num_workers: 2
+  seed: 42
+  mixed_precision: false  # set true (or --mixed-precision) for AMP on CUDA
+  train_max_samples: null      # null = full training split
+  val_max_samples: null        # null = full validation split
+  history_path: outputs/analysis/unet_training_history.json
+
+# Best-checkpoint destination (loadable by models/unet/inference.py).
+checkpoint:
+  dir: checkpoints
+  filename: unet_cityscapes.pth
 
 weights:
   class_weights: auto

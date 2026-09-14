@@ -43,7 +43,7 @@ def test_load_unet_config_values():
     cfg = load_config("unet")
     assert cfg["model"]["num_classes"] == 19
     assert cfg["model"]["base_channels"] == 64
-    assert cfg["data"]["image_size"] == [512, 1024]
+    assert cfg["data"]["image_size"] == [256, 512]
     assert cfg["env"]["seed"] == 42
     assert cfg["env"]["device"] == "auto"
     assert cfg["train"]["epochs"] == 60
@@ -118,7 +118,7 @@ def test_get_dotted_accessor():
     cfg = load_config("unet")
     assert get(cfg, "model.num_classes") == 19
     assert get(cfg, "missing.key", "fallback") == "fallback"
-    assert get(cfg, "data.image_size") == [512, 1024]
+    assert get(cfg, "data.image_size") == [256, 512]
 
 
 def test_resolve_path_relative():

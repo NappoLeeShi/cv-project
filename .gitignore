@@ -2,3 +2,16 @@
 __pycache__/
 *.py[cod]
 .pytest_cache/
+
+# Virtual environments
+.venv/
+
+# Heavy model weights / checkpoints (redeemeable, never committed)
+checkpoints/
+
+# Datasets (large, obtained manually; sample demo images under data/pipeline are kept)
+data/cityscapes/
+data/kitti/
+
+# Regenerated outputs
+outputs/

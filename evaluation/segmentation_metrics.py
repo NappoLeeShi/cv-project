@@ -210,3 +210,33 @@ def evaluate_segmentation(
         "mean_dice": _mean_valid(dices, dice_denom > 0, cm),
         "class_accuracy": _accuracy_from_confusion(cm),
     }
+
+
+def aggregate_from_confusion_matrix(cm) -> dict:
+    """Derive all segmentation metrics from a single aggregated confusion matrix.
+
+    Equivalent to :func:`evaluate_segmentation` on the raw prediction/target
+    arrays that produced ``cm``, but suitable for evaluation loops that
+    accumulate one global ``(num_classes, num_classes)`` matrix across many
+    images (by summing the per-image :func:`confusion_matrix` outputs) without
+    materialising the full concatenated tensors.
+
+    Returns the same key set as :func:`evaluate_segmentation`.
+    """
+    cm_arr = np.asarray(cm, dtype=np.float64)
+    if cm_arr.ndim != 2 or cm_arr.shape[0] != cm_arr.shape[1] or cm_arr.shape[0] == 0:
+        raise ValueError(
+            f"confusion matrix must be a non-empty square matrix, got shape {cm_arr.shape}"
+        )
+    ious = _iou_from_confusion(cm_arr)
+    dices = _dice_from_confusion(cm_arr)
+    actual, predicted, tp = _per_class_arrays(cm_arr)
+    total = float(cm_arr.sum())
+    return {
+        "pixel_accuracy": float(np.trace(cm_arr) / total) if total > 0 else 0.0,
+        "iou_per_class": ious,
+        "miou": _mean_valid(ious, (actual + predicted - tp) > 0, cm_arr),
+        "dice_per_class": dices,
+        "mean_dice": _mean_valid(dices, (actual + predicted) > 0, cm_arr),
+        "class_accuracy": _accuracy_from_confusion(cm_arr),
+    }

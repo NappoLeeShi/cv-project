@@ -66,10 +66,20 @@ visualization:
   alpha_depth: 0.35
 
 difficulty:
+  # Pipeline difficulty score = weighted sum of normalized indicators
+  # (documented in evaluation/difficulty_analysis.py):
+  #   1. segmentation_uncertainty (1 - mean_confidence)
+  #   2. depth_variation           (coef. of variation of inverse depth)
+  #   3. scene_complexity          (fraction of 19 trainIds present)
+  #   4. foreground_fraction       (near-region pixel ratio)
+  #   5. object_density            (ROI-class pixel ratio)
   factor_weights: [0.25, 0.20, 0.20, 0.20, 0.15]
   bins:
-    easy: 0.4
-    medium: 0.7
+    easy: 0.4     # score <= 0.4  -> easy
+    medium: 0.7   # score <= 0.7  -> medium, else hard
+
+pipeline_eval:
+  input_dir: data/pipeline/images
 
 logging:
   level: INFO

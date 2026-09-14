@@ -3,6 +3,7 @@ import pytest
 import torch
 
 from evaluation.segmentation_metrics import (
+    aggregate_from_confusion_matrix,
     class_accuracy,
     class_dice,
     class_iou,
@@ -244,3 +245,24 @@ def test_manual_verification_example():
     assert metrics["miou"] == pytest.approx(1 / 3)
     assert np.allclose(metrics["dice_per_class"], [1 / 2, 1 / 2])
     assert metrics["mean_dice"] == pytest.approx(1 / 2)
+
+
+def test_aggregate_from_confusion_matches_evaluate():
+    gt = np.asarray([[0, 0, 1], [1, 255, 2]], dtype=np.int64)
+    pred = np.asarray([[0, 1, 1], [2, 0, 2]], dtype=np.int64)
+    cm = confusion_matrix(pred, gt, num_classes=3, ignore_index=255)
+    aggregated = aggregate_from_confusion_matrix(cm)
+    reference = evaluate_segmentation(pred, gt, num_classes=3, ignore_index=255)
+    assert aggregated["pixel_accuracy"] == pytest.approx(reference["pixel_accuracy"])
+    assert aggregated["miou"] == pytest.approx(reference["miou"])
+    assert aggregated["mean_dice"] == pytest.approx(reference["mean_dice"])
+    assert np.allclose(aggregated["iou_per_class"], reference["iou_per_class"])
+    assert np.allclose(aggregated["dice_per_class"], reference["dice_per_class"])
+    assert np.allclose(aggregated["class_accuracy"], reference["class_accuracy"])
+
+
+def test_aggregate_from_confusion_invalid_shape_raises():
+    with pytest.raises(ValueError, match="square"):
+        aggregate_from_confusion_matrix(np.zeros(19, dtype=np.int64))
+    with pytest.raises(ValueError, match="square"):
+        aggregate_from_confusion_matrix(np.zeros((2, 3), dtype=np.int64))
