@@ -1,0 +1,58 @@
+# U-Net semantic segmentation configuration (Cityscapes, 19 classes)
+# Group layout follows the architecture specification (Section 18).
+
+data:
+  cityscapes_root: data/cityscapes
+  image_dir: data/cityscapes/images
+  label_dir: data/cityscapes/labels
+  split_dir:
+    train: train
+    val: val
+    test: test
+  image_size: [512, 1024]
+  # image_size is [H, W]. Cityscapes native 1024x2048 is downscaled to 512x1024.
+  normalization:
+    mean: [0.485, 0.456, 0.406]
+    std: [0.229, 0.224, 0.225]
+  num_workers: 2
+
+model:
+  name: unet
+  num_classes: 19
+  in_channels: 3
+  base_channels: 64
+
+inference:
+  device: auto
+  image_size: [512, 1024]   # [H, W]; null keeps the source resolution
+  normalize: true
+
+train:
+  batch_size: 4
+  epochs: 60
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  optimizer: adam
+  loss: weighted_ce
+  dice_coefficient: 0.0
+  scheduler: step
+  lr_decay_step: 30
+  lr_decay_gamma: 0.5
+  val_interval: 5
+  augmentations:
+    hflip: true
+    random_scale_crop: true
+    color_jitter: true
+
+weights:
+  class_weights: auto
+  max_class_weight: 1.0
+
+env:
+  device: auto
+  seed: 42
+  dtype: float32
+
+paths:
+  checkpoint_dir: outputs/checkpoints/unet
+  log_dir: outputs/logs

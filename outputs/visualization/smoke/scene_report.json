@@ -1,0 +1,102 @@
+{
+  "scene": {
+    "height": 128,
+    "width": 256,
+    "analyzed_pixels": 32768,
+    "num_semantic_classes": 4,
+    "depth_convention": "inverse_relative_larger_closer",
+    "depth_thresholds": {
+      "low": 19.84251968503937,
+      "high": 40.15748031496063
+    },
+    "semantic_distribution": {
+      "road": 8192,
+      "sky": 14784,
+      "person": 3264,
+      "car": 6528
+    },
+    "object_class_pixel_ratio": 0.298828125
+  },
+  "semantic_distribution": {
+    "road": 8192,
+    "sky": 14784,
+    "person": 3264,
+    "car": 6528
+  },
+  "depth_distribution": {
+    "near": 0.3359375,
+    "middle": 0.3359375,
+    "far": 0.328125
+  },
+  "regions": {
+    "road": {
+      "pixel_count": 8192,
+      "pixel_ratio": 0.25,
+      "mean_depth": 52.677165354330704,
+      "median_depth": 52.67716535433071,
+      "min_depth": 45.354330708661415,
+      "max_depth": 60.0
+    },
+    "sky": {
+      "pixel_count": 14784,
+      "pixel_ratio": 0.451171875,
+      "mean_depth": 17.434297985479088,
+      "median_depth": 13.228346456692913,
+      "min_depth": 0.0,
+      "max_depth": 44.881889763779526
+    },
+    "person": {
+      "pixel_count": 3264,
+      "pixel_ratio": 0.099609375,
+      "mean_depth": 30.0,
+      "median_depth": 30.0,
+      "min_depth": 15.118110236220472,
+      "max_depth": 44.881889763779526
+    },
+    "car": {
+      "pixel_count": 6528,
+      "pixel_ratio": 0.19921875,
+      "mean_depth": 30.0,
+      "median_depth": 30.0,
+      "min_depth": 15.118110236220472,
+      "max_depth": 44.881889763779526
+    }
+  },
+  "traffic_context": {
+    "vehicles": {
+      "car": {
+        "pixel_count": 6528,
+        "median_depth": 30.0,
+        "proximity": "middle"
+      }
+    },
+    "pedestrians": {
+      "person": {
+        "pixel_count": 3264,
+        "median_depth": 30.0,
+        "proximity": "middle"
+      }
+    },
+    "road": {
+      "road": {
+        "pixel_count": 8192,
+        "median_depth": 52.67716535433071,
+        "proximity": "near"
+      }
+    },
+    "drivable_coverage_ratio": 0.25,
+    "drivable_median_depth": 52.67716535433071,
+    "dynamic_object_count": 2,
+    "nearest_dynamic_class": {
+      "class": "person",
+      "median_depth": 30.0,
+      "proximity": "middle"
+    }
+  },
+  "interpretation": [
+    "The nearest dynamic class is 'person' (middle relative-depth region).",
+    "Vehicle class 'car' appears in the middle relative-depth region.",
+    "Person pixels appear in the middle relative-depth region.",
+    "Drivable areas (road) cover the lower/middle scene relative-depth region."
+  ]
+}

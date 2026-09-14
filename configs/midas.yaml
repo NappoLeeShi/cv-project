@@ -1,0 +1,36 @@
+# MiDaS monocular depth estimation configuration (pretrained, relative depth)
+# Group layout follows the architecture specification (Section 18).
+
+model:
+  name: midas
+  variant: dpt_large            # dpt_large | dpt_hybrid | midas_small
+  source: hub                   # hub | local
+  repo: intel-isl/MiDaS
+  weights_path: null            # required when source: local
+
+preprocessing:
+  input_size: 384
+  use_official_transform: true
+
+inference:
+  device: auto
+  dtype: float32
+  image_size: null              # optional [H, W] input resize; null keeps source
+  normalize: true
+  # Clip relative-depth output to the interpolated percentile range.
+  clip_percentile: [0.05, 0.995]
+
+depth:
+  representation: relative      # inverse relative depth; never meters
+  metric_alignment: median      # evaluation-time median scale alignment (Step 08)
+
+output:
+  # Normalization used for visualization / fusion.
+  normalization: minmax         # minmax
+  # Convention for the normalized depth value: larger = farther from camera.
+  larger_is_farther: true
+
+eval:
+  align: lsq_scale_shift        # lsq_scale_shift | median_ratio
+  depth_cap_m: 80
+  crop_margin: 0

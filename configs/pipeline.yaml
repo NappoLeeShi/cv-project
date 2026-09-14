@@ -1,0 +1,78 @@
+# Full-pipeline configuration (segmentation + depth -> fusion -> scene understanding)
+# Group layout follows the architecture specification (Section 18).
+
+data:
+  # Shared spatial resolution used by both branches at inference / fusion time.
+  image_size: [512, 1024]
+  cityscapes:
+    root: data/cityscapes
+    image_dir: null        # auto: leftImg8bit or images
+    label_dir: null        # auto: gtFine or labels
+    split: train
+    require_labels: true
+    missing_policy: error  # error | skip
+    max_samples: null      # null = full dataset, e.g. 10 for development
+  kitti:
+    root: data/kitti
+    image_dir: images
+    depth_dir: depth
+    split: val
+    scale_mm: 1000         # raw uint16 values are millimetres
+    depth_cap_m: 80        # pixels beyond this distance are flagged invalid
+    missing_policy: error
+    max_samples: null
+
+system:
+  device: auto
+  seed: 42
+
+# Which pipeline steps to run (used by main.py orchestration).
+steps:
+  run_seg: true
+  run_depth: true
+  run_fuse: true
+  run_scene: true
+  run_eval: true
+  run_viz: true
+
+output:
+  base_dir: outputs
+  segmentation_dir: outputs/segmentation
+  depth_dir: outputs/depth
+  analysis_dir: outputs/analysis
+  # Put each run's artifacts into a timestamped subfolder when enabled.
+  run_subfolder: true
+
+fusion:
+  # Dynamic-object classes in Cityscapes trainId space.
+  roi_classes: [11, 12, 13, 14, 15, 16, 17, 18]   # person..bicycle
+  drivable_classes: [0, 1]                         # road, sidewalk
+  # Relative-depth region boundaries (fraction of the depth distribution):
+  # below q0 -> far, above q1 -> near (larger inverse depth = closer).
+  region_quantiles: [0.3333, 0.6667]               # far / middle / near terciles
+  stat_quantiles: [0.1, 0.25, 0.5, 0.75, 0.9]
+  near_far_quantile: 0.35
+  min_cc_area: 50
+
+analyzer:
+  near_quantile: 0.35
+  obstacle_frac: 0.5
+  person_near_road_margin: 0.1
+
+visualization:
+  enabled: true
+  output_dir: outputs/visualization
+  alpha_segmentation: 0.5
+  alpha_depth: 0.35
+
+difficulty:
+  factor_weights: [0.25, 0.20, 0.20, 0.20, 0.15]
+  bins:
+    easy: 0.4
+    medium: 0.7
+
+logging:
+  level: INFO
+  file: outputs/logs/pipeline.log
+  max_bytes: 1000000
+  backup_count: 3

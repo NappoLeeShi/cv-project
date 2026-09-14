@@ -6,3 +6,5 @@ opencv-python
 matplotlib
 tqdm
 scikit-learn
+PyYAML
+pytest

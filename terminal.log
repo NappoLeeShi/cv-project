@@ -1,0 +1,371 @@
+2026-09-14 08:42:48 history > terminal.log
+2026-09-14 08:41:09 script terminal.log
+2026-09-14 08:09:14 pytest
+2026-09-14 06:54:32 python -c "from models.unet.model import UNet; import torch; m=UNet(num_classes=19); x=torch.randn(1,3,128,256); y=m(x); print(y.shape)"
+2026-09-14 06:44:24 python -c "from preprocessing.cityscapes import *; from preprocessing.kitti import *; print('Dataset modules OK')"
+2026-09-14 06:27:49 git status
+2026-09-14 06:27:21 git status pytest
+2026-09-14 06:26:37 python -c "from utils.config import load_config; print(load_config('unet.yaml'))"
+2026-09-14 06:25:54 python -c "from utils.config import load_config; print(load_config('configs/unet.yaml'))"
+2026-09-14 06:24:53 source .venv/bin/activate.fish
+2026-09-14 05:25:52 git pull
+2026-09-14 08:23:06 cd ..
+2026-09-14 08:22:12 ls
+2026-09-14 05:38:23 opencode
+2026-09-14 05:38:21 cd cv-project/
+2026-09-14 05:38:15 cd Projects/
+2026-09-14 05:25:41 vscodium cv-project/
+2026-09-13 22:23:25 reboot
+2026-09-12 12:15:56 poweroff
+2026-09-11 14:09:38 kill -9 discord
+2026-09-11 14:08:57 pkill -9 discord
+2026-09-11 14:08:18 pkill discord
+2026-09-08 11:08:31 sudo nvim /etc/default/limine
+2026-09-08 11:07:11 brightnessctl -l
+2026-09-08 11:06:01 sudo nvim /boot/limine.conf
+2026-09-08 11:03:59 sudo nano /boot/limine.conf
+2026-09-08 11:03:40 sudo cd /boot
+2026-09-08 11:03:36 sudo
+2026-09-08 11:03:32 cd /boot/
+2026-09-08 11:03:28 cd /boot
+2026-09-08 11:02:54 sudo find /boot -maxdepth 3 -iname '*limine*' -type f -print
+2026-09-08 11:02:47 sudo grep -R "cmdline" /boot/limine /etc/limine 2>/dev/null
+2026-09-08 11:02:13 sudo nano cmdline
+2026-09-08 11:02:06 cd /proc
+2026-09-08 11:00:59 sudo nvim /proc/cmdline
+2026-09-08 11:00:04 sudo nano /proc/cmdline
+2026-09-08 10:59:42 ls -l /sys/class/backlight/
+2026-09-08 10:58:58 sudo sh -c 'echo 255 > /sys/class/backlight/nvidia_wmi_ec_backlight/brightness'
+2026-09-08 10:58:43 sudo sh -c 'echo 10 > /sys/class/backlight/nvidia_wmi_ec_backlight/brightness'
+2026-09-08 10:58:20 lsmod | grep -E 'nvidia|i915'
+2026-09-08 10:58:09 cat /sys/class/backlight/nvidia_wmi_ec_backlight/max_brightness
+cat /sys/class/backlight/nvidia_wmi_ec_backlight/brightness
+cat /sys/class/backlight/nvidia_wmi_ec_backlight/actual_brightness
+2026-09-08 10:57:03 brightnessctl -d nvidia_wmi_ec_backlight info
+2026-09-08 10:56:59 cat /proc/cmdline
+2026-09-08 10:55:58 echo $XDG_SESSION_TYPE
+2026-09-08 10:55:40 xrandr --listproviders
+2026-09-08 10:52:02 sudo nano /etc/modprobe.d/nvidia-backlight-fix.conf
+2026-09-08 10:49:20 sudo nano /etc/modprobe.d/nvidia.conf
+2026-09-08 10:47:10 ls /sys/class/backlight/
+2026-09-08 10:46:09 set acpi_backlight nvidia_wmi_ec
+2026-09-08 10:45:52 acpi_backlight=nvidia_wmi_ec
+2026-09-08 10:43:49 sudo pacman -S steam
+2026-09-08 10:43:27 cd E
+2026-09-08 10:43:24 cd /mnt/
+2026-09-08 10:43:17 cd /mnt/e
+2026-09-08 10:39:24 ls /mnt
+2026-09-08 10:39:22 ls mnt
+2026-09-08 10:39:16 sudo mkdir /mnt/E/
+2026-09-08 10:38:45 sudo nvim /etc/fstab
+2026-09-08 10:38:10 lsblk -f -s
+2026-09-08 10:38:01 lsblk
+2026-09-08 10:37:52 clear
+2026-09-08 10:37:51 cler
+2026-09-08 10:30:58 lsblk -f
+2026-09-08 10:30:23 lslbk
+2026-09-08 10:29:58 sudo pacman -S ntfs-3g
+2026-09-08 10:09:18 btop --force-utf
+2026-09-08 10:09:10 btop
+2026-09-08 10:08:07 nmcli device wifi connect \ số\ 4 --ask
+2026-09-08 10:08:03 nmcli device wifi connect \ số\ 4
+2026-09-08 10:07:02 sudo pacman -Syu ntfs-3g
+2026-09-08 10:05:34 nmcli device wifi list
+2026-09-08 10:05:26 nmcli
+2026-09-08 10:02:14 lsblk -h
+2026-09-08 10:02:08 lsblk -fs
+2026-09-07 22:50:53 git push
+2026-09-07 22:50:50 git commit -m "unet module"
+2026-09-07 22:50:26 git add .
+2026-09-07 22:49:46 python -c "import torch; print(torch.cuda.is_available())"
+2026-09-07 22:38:45 pip install -r requirements.txt
+2026-09-07 21:35:47 git commit -m "updated"
+2026-09-07 21:33:09 mv ./scene-understanding/* . cv-project/
+2026-09-07 21:31:53 mv ./scene-understanding/* . ~/Projects/cv-project/
+2026-09-07 21:30:29 cd scene-understanding/
+2026-09-07 21:30:14 cd
+2026-09-07 20:02:45 git push -u origin main
+2026-09-07 20:02:40 git commit -m "updated architure"
+2026-09-07 20:01:06 git add ,
+2026-09-06 14:43:13 git pusg
+2026-09-06 14:43:11 git commit -m "update readme.md"
+2026-09-06 14:38:40 vscodium lightgbm/
+2026-09-06 14:36:53 git commit -m "add readme.md"
+2026-09-06 14:34:14 cd K-Means-Clustering/
+2026-09-06 14:30:51 mv session-k-means.json ~/Projects/K-Means-Clustering/prompts_and_sessions/
+2026-09-06 14:30:11 cd Bản\ tải\ về/
+2026-09-06 14:27:08 vscodium K-Means-Clustering/
+2026-09-06 13:04:00 git reset --hard HEAD
+git pull
+2026-09-06 12:23:47 cd lightgbm/
+2026-09-06 12:23:38 cd home/shy/
+2026-09-06 12:23:35 cd //
+2026-09-06 12:23:00 mv NYC.csv ~/Projects/lightgbm/data/
+2026-09-06 12:22:27 unzip NYC.csv.zip
+2026-09-02 18:38:30 vscodium actor_critic/
+2026-09-02 15:48:52 git commit -m "actorcritic"
+2026-09-02 15:44:53 git remote add origin git@github.com:NappoLeeShi/actor_critic.git
+2026-09-02 15:44:20 git remote remove origin
+2026-09-02 15:38:23 git push -u origin
+2026-09-02 15:37:14 git remote add origin
+2026-09-02 14:27:23 cd actor_critic/
+2026-09-02 14:26:06 source venv/bin/activate.fish
+2026-09-02 14:23:19 python -m venv .venv
+2026-09-02 14:21:24 git clone https://github.com/NappoLeeShi/actor_critic.git
+2026-08-30 18:38:13 zip -r nhom5_linearregression_machinelearning.zip nhom5_linearregression/
+2026-08-30 18:37:58 zip -r nhom5_linearregression/
+2026-08-30 18:37:28 rm -r .venv/
+2026-08-30 18:37:11 rm .venv/
+2026-08-30 18:36:22 vim requirements.txt
+2026-08-30 18:36:05 mv requirment.txt requirements.txt
+2026-08-30 18:34:19 pip freeze >> requirment.txt
+2026-08-30 18:33:00 cd Linear_Regresstion/
+2026-08-30 18:32:51 cd nhom5_linearregression/
+2026-08-30 18:32:44 rm nhom5_linearregression_machinelearning.zip
+2026-08-30 18:28:18 zip --help
+2026-08-30 18:27:58 zip nhom5_linearregression/
+2026-08-30 18:27:18 cd..
+2026-08-30 18:27:12 mv Linear\ Regression\ in\ Machine\ learning.pdf ~/nhom5_linearregression/
+2026-08-30 18:26:25 cp -r Linear_Regresstion/ ~/nhom5_linearregression/
+2026-08-30 18:25:50 mkdir nhom5_linearregression
+2026-08-30 18:23:25 cp -r Linear_Regresstion/
+2026-08-30 18:20:05 git fetch origin
+git reset --hard origin/main
+2026-08-30 18:19:36 git pull --force
+2026-08-30 18:05:26 sudo pacman -S zip
+2026-08-30 17:33:05 vscodium Linear_Regresstion/
+2026-08-22 20:14:31 sudo pacman -S krita
+2026-08-21 14:54:00 git commit -m "update processing"
+2026-08-21 14:23:27 pip install pandas
+2026-08-21 14:16:09 git commit -m "update model, dataset"
+2026-08-21 14:15:55 git remote add origin git@github.com:NappoLeeShi/K-Means-Clustering.git
+2026-08-21 14:14:57 git remote
+2026-08-21 14:14:13 vscodium computer_vision/
+2026-08-21 14:13:31 python -m env. env
+2026-08-21 14:12:28 mv Shopping\ Mall\ Customer\ Segmentation\ Data\ .csv ~/Projects/K-Means-Clustering/data/
+2026-08-21 14:11:31 unzip kmean.zip
+2026-08-21 14:01:28 git clone https://github.com/NappoLeeShi/K-Means-Clustering.git
+2026-08-18 14:51:01 pip install numby
+2026-08-17 22:08:14 git commit -m "upadtemd"
+2026-08-17 19:57:12 git commit -m "update"
+2026-08-17 19:51:14 git branch -m master main
+2026-08-17 19:50:34 git checkout -b main origin/main
+2026-08-17 19:49:48 git checkout main
+2026-08-17 19:48:51 git commit -m "add 1.2md"
+2026-08-17 19:48:24 git remote add origin git@github.com:NappoLeeShi/cv-project.git
+2026-08-17 19:47:29 git branch -a
+2026-08-17 19:44:53 git init
+2026-08-17 19:10:14 mkdir cv-project
+2026-08-17 18:14:10 git push --force
+2026-08-17 18:14:01 git push -force
+2026-08-17 18:10:57 git commit -m "update scratch"
+2026-08-17 18:10:36 /home/shy/Projects/lightgbm/.venv/bin/python /home/shy/Projects/lightgbm/src/main.py
+2026-08-17 18:10:32 /home/shy/Projects/lightgbm/.venv/bin/python /home/shy/Projects/lightgbm/src/tree.py
+2026-08-17 17:53:56 /home/shy/Projects/lightgbm/.venv/bin/python /home/shy/Projects/lightgbm/src/node.py
+2026-08-17 17:50:54 /home/shy/Projects/lightgbm/.venv/bin/python /home/shy/Projects/lightgbm/src/boosting.py
+2026-08-17 17:47:30 /home/shy/Projects/lightgbm/.venv/bin/python /home/shy/Projects/lightgbm/src/goss.py
+2026-08-17 17:39:16 /home/shy/Projects/lightgbm/.venv/bin/python /home/shy/Projects/lightgbm/src/histogram.py
+2026-08-17 17:29:41 /home/shy/Projects/lightgbm/.venv/bin/python /home/shy/Projects/lightgbm/src/preprocessing.py
+2026-08-17 17:29:30 /home/shy/Projects/lightgbm/.venv/bin/python /home/shy/Projects/lightgbm/src/metrics.py
+2026-08-17 17:27:11 /home/shy/Projects/lightgbm/.venv/bin/python /home/shy/Projects/lightgbm/src/objective.py
+2026-08-17 17:06:07 /home/shy/Projects/lightgbm/.venv/bin/python /home/shy/Projects/lightgbm/main.py
+2026-08-17 16:54:24 /home/shy/Projects/lightgbm/.venv/bin/python /home/shy/Projects/lightgbm/model/tree.py
+2026-08-17 16:35:49 sudo pacman -Syu opencode
+2026-08-17 16:34:18 sudo pacman -S opencode
+2026-08-16 22:32:13 git commit -m "up main.iynp"
+2026-08-16 22:31:47 git remote add origin git@github.com:NappoLeeShi/lightgbm.git
+2026-08-16 21:08:09 pip install scikit-learn
+2026-08-16 20:33:04 pip install seaborn
+2026-08-16 20:32:51 install numpy
+2026-08-16 20:32:43 pip install matplotlib
+2026-08-16 20:30:52 pip install lightgbm
+2026-08-16 20:28:22 mv WA_Fn-UseC_-Telco-Customer-Churn.csv ~/Projects/lightgbm/
+2026-08-16 20:27:12 ls ./*.csv
+2026-08-16 20:27:00 unzip archive\(1\).zip
+2026-08-16 20:25:26 git clone https://github.com/NappoLeeShi/lightgbm.git
+2026-08-11 22:18:30 unzip nhom_10_support_vector_machine.zip
+2026-08-11 15:50:28 cd shy
+2026-08-11 15:47:51 ncdu
+2026-08-11 15:47:28 cd /
+2026-08-11 15:47:27 cd /root/
+2026-08-11 15:46:37 sudo rm -rf /var/cache/ --force
+2026-08-11 15:45:34 rm -rf /var/cache/ --force
+2026-08-11 15:44:49 rm -rf /var/cache/
+2026-08-11 15:38:51 rm -r /var/cache
+2026-08-11 15:29:13 sudo pacman -S ncdu
+2026-08-11 15:28:27 run ndcu
+2026-08-11 09:02:35 nvim main.py
+2026-08-11 09:02:21 cd lab1/
+2026-08-11 09:02:18 cd lab
+2026-08-11 09:02:16 cd computer_vision/
+2026-08-11 09:02:03 sudo pacman -S nvim
+2026-08-11 09:01:53 LS
+2026-08-11 07:46:50 sudo cd /boot/
+2026-08-10 22:11:05 git commit -m "update lab3"
+2026-08-10 21:22:06 git commit -m "add ii,1,2"
+2026-08-10 19:57:35 vscodium loc_tuyen_tinh_mean_gaussian.ipynb
+2026-08-10 17:22:11 git commit -m "fix iii.2,3."
+2026-08-10 17:19:57 git commit -m "fix iii.2,3"
+2026-08-10 16:23:36 git commit -m "add more implementation"
+2026-08-10 16:22:31 git commit -m "fixname"
+2026-08-10 16:14:29 git commit -m "fill plan&implementation for lab3."
+2026-08-10 16:12:22 git pull origin main --rebase
+2026-08-10 16:11:40 git commit -m "fill plan&implementation for lab3"
+2026-08-10 15:15:38 pip install scikit-image
+2026-08-10 14:49:30 git commit -m "fill plan&implementation for lab2"
+2026-08-10 14:44:41 git add
+2026-08-10 14:01:27 git commit -m "fill plan"
+2026-08-10 14:01:20 git remote add origin git@github.com:NappoLeeShi/computer_vision.git
+2026-08-10 13:57:42 git push -u
+2026-08-10 13:56:51 git reset HEAD~1
+2026-08-10 13:52:19 git commit -m "add plan"
+2026-08-10 13:52:00 git add ./lab2/docs/plan.md
+2026-08-10 13:51:17 git fetch origin
+git reset origin/main --hard
+git pull
+2026-08-10 13:46:51 git add  ./lab2/docs/plan.md
+2026-08-10 13:06:22 sudo pacman -S --needed fcitx5 fcitx5-unikey fcitx5-configtool fcitx5-gtk fcitx5-qt
+2026-08-10 12:41:57 vscodium ./Linear_Regresstion/
+2026-08-09 21:29:00 git commit -m "add gd"
+2026-08-09 21:28:45 git config --global user.email "Khuattrongthuan@gmail.com"
+git config --global user.name "NappoLeeShi"
+2026-08-09 21:26:26 ssh -T git@github.com
+2026-08-09 21:22:19 git remote add origin git@github.com:NappoLeeShi/Linear_Regresstion.git
+2026-08-09 19:13:00 mv vietnam_housing_dataset.csv ~/Projects/Linear_Regresstion/
+2026-08-09 19:05:43 pip numpy
+2026-08-09 18:57:30 unzip archive.zip
+2026-08-09 18:50:53 vscodium ./linear_regression
+2026-08-09 18:49:46 git clone https://github.com/NappoLeeShi/Linear_Regresstion.git
+2026-08-09 18:37:35 pip install opencv-python
+2026-08-09 18:36:42 pip install cv2
+2026-08-09 18:13:56 git fetch origin
+git reset --hard origin/main
+git clean -fd
+2026-08-09 18:13:12 git fetch origin
+git reset --hard origin/lts
+git clean -fd
+2026-08-09 18:08:28 vscodium ./
+2026-08-09 18:07:36 open
+2026-08-09 18:06:42 vscodium
+2026-08-09 18:01:51 yay -S zalo-for-linux-bin
+2026-08-09 18:01:33 sudo pacman -S yay
+2026-08-09 18:00:37 sudo systemctl enable --now snapd.socket
+sudo ln -s /var/lib/snapd/snap /snap
+2026-08-09 16:45:28 
+brightnessctl --device=intel_backlight set 100%
+2026-08-09 16:45:15 # Set Intel brightness to 100%
+brightnessctl --device=intel_backlight set 100%
+2026-08-09 16:40:59 nvidia-smi
+2026-08-09 16:39:35 lspci -k | grep -A 3 -E "(VGA|3D)"
+2026-08-09 16:37:04 sudo pacman -Syu vscodium
+2026-08-09 10:37:15 sudo pacman -Syu Vscodium
+2026-08-09 10:32:41 sudo pacman -S vscodium
+2026-08-09 10:32:14 sudo pacman -s vscodium
+2026-08-09 10:29:27 cat ~/.ssh/id_ed25519.pub
+2026-08-09 10:29:07 ls -al ~/.ssh
+2026-08-09 10:28:48 set SSH_AUTH_SOCK /home/shy/.ssh/agent/s.vxrGeMljWM.agent.aJ3cEMaJX5
+2026-08-09 10:27:59 eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/id_ed25519
+2026-08-09 10:27:11 ssh-keygen -t ed25519 -C "Khuattrongthuan@gmail.com"
+2026-08-09 10:26:43 mkdir ~/.ssh
+2026-08-09 10:21:47 git clone https://github.com/NappoLeeShi/computer_vision.git
+2026-08-09 10:21:19 mkdir Projects
+2026-08-09 10:17:59 wpctl status
+2026-06-27 14:24:24 sudo pacman -s minecraft
+2026-06-26 14:02:32 nvim Quickshell.lua
+2026-06-26 14:02:27 cp Clipboard.lua Quickshell.lua
+2026-06-26 14:02:18 cd Commands/
+2026-06-26 14:02:15 cd Startup/
+2026-06-26 14:02:08 cd Modules/
+2026-06-26 14:02:06 cd MO
+2026-06-26 14:02:04 cd .config/hypr
+2026-06-26 14:01:40 qs -c noctalia-shell & disown
+2026-06-26 14:00:52 nvim Apps.lua
+2026-06-26 14:00:22 cd Binds/
+2026-06-26 14:00:19 cd Keymap/
+2026-06-26 14:00:12 l
+2026-06-26 14:00:07 cd Keymaps/
+2026-06-26 14:00:04 scd Keymaps/
+2026-06-26 13:59:56 cd hypr/
+2026-06-26 13:59:54 cd .config/
+2026-06-26 13:55:09 sudo pacman -Syu
+2026-06-26 13:53:49 sudo cachyos-rate-mirrors
+2026-06-26 13:52:55 sudo pacman -Syyu
+2026-06-26 13:52:51 y
+2026-06-26 13:49:52 hyprctl version
+2026-06-26 13:49:28 firefox & disown
+2026-06-26 13:46:17 rm hyprlock.conf
+2026-06-26 13:46:06 hyprctl reload
+2026-06-26 13:41:27 nmcli device wifi connect Tran\ Gia\ L3 --ask
+2026-06-26 13:41:17 nmcli device wifi connect "Tran Gia L3" password "trangiacamon"
+2026-06-26 13:40:06 nmcli device wifi connect Tran\ Gia\ L2 password trangiacamon
+2026-06-26 12:46:18 rm -r hyprland.conf
+2026-06-26 12:46:09 exit
+2026-06-26 12:45:49 cp -r quick-Ei/hypr/ .config
+2026-06-26 12:45:34 ;s
+2026-06-26 12:45:33 ls quick-Ei/
+2026-06-26 12:45:18 nmcli -t
+2026-06-26 12:45:10 nmcli device wifi connect Tran\ Gia\ L3 password trangiacamon
+2026-06-26 12:45:02 nmcli device wifi connect Tran\ Gia\ L3\ password trangiacamon
+2026-06-26 12:44:35 nmcli device wifi connect Tran\ Gia\ L3
+2026-06-26 12:44:18 git clone https://github.com/darlinshot/quick-Ei
+2026-06-26 12:44:11 git clone https://github.com/darlinshot/quick-EI
+2026-05-19 09:04:49 shutdown
+2026-05-19 08:29:23 cleanup
+2026-05-19 07:56:47 sudo pacman -Syu nmap
+2026-05-19 07:56:37 sudo pacman -Rdd quickshell
+2026-05-19 07:53:27 sudo pacman -Rdd geocode-glib-common
+2026-05-19 07:52:05 sudo pacman -S nmap
+2026-05-19 07:51:57 sudo pacman - nmap
+2026-05-19 07:51:26 sudo pacman -Sc
+2026-05-19 07:51:06 sudo pacman -Sy cachyos-keyring archlinux-keyring
+2026-05-19 07:49:48 nmap -sV localhost
+2026-05-19 07:21:40 firefox cs1.2.pdf
+2026-05-19 07:16:50 code hyprland.conf
+2026-05-16 11:34:36 touch init.conf
+2026-05-16 11:34:33 cd keybinds
+2026-05-16 11:34:29 mkdir keybinds
+2026-05-16 11:34:23 cd modules
+2026-05-16 11:34:21 mkdir modules
+2026-05-16 11:29:56 sudo pacman -S hyprshot
+2026-05-16 11:13:49 sudo pacman -S grim slurp wl-clipboard libnotify jq
+2026-05-16 11:06:58 cd ~/.config/hypr/
+2026-05-16 11:06:49 code .config/hypr/hyprland.conf
+2026-05-16 11:06:27 nano ~/.config/hypr/hyprland.conf
+2026-05-16 11:05:16 sudo pacman -S flameshot
+2026-05-16 10:27:49 code
+2026-05-16 10:27:33 cd hypr
+2026-05-16 10:27:06 cd cachyos
+2026-05-16 10:26:33 cd btop
+2026-05-16 10:25:44 list
+2026-05-16 10:25:12 cd ~/.config
+2026-05-16 10:11:07 sudo pacman -S flatpak
+2026-05-16 10:04:20 code settings.json
+2026-05-16 10:04:12 cd .config/discord/
+2026-05-16 09:47:52 brightnessctl set 1255
+2026-05-16 09:47:44 brightnessctl set 100
+2026-05-16 09:47:28 sudo pacman -S brightnessctl
+2026-05-16 09:43:34 sudo pacman -S zen-browser-bin
+2026-05-16 09:42:14 rofi -show drun
+2026-05-16 09:40:00 sudo pacman -S rofi
+2026-05-16 09:34:00 pkill firefox
+2026-05-16 09:33:57 pkill firefoc
+2026-01-13 12:38:02 sudo pacman -S slurp
+2026-01-13 12:28:09 sudo pacman -S grim
+2026-01-13 12:22:22 systemctl --user start hyprpolkitagent
+2026-01-13 12:20:48 code discord.desktop
+2026-01-13 12:20:43 cd /opt/discord/
+2026-01-13 11:44:59 qs -c noctalia-shell
+2026-01-13 11:43:05 sudo pacman -S hyprpolkitagent
+2026-01-13 11:41:45 paru -S polkit-kde-agent
+2026-01-13 11:40:54 paru -S cliphist matugen-git cava wlsunset xdg-desktop-portal python3 evolution-data-server
+2026-01-13 11:40:40 paru -S ddcutil
+2026-01-13 11:40:28 paru -S quickshell gpu-screen-recorder brightnessctl
+2026-01-13 11:39:50 paru -S noctalia-shell
+2026-01-13 11:36:20 sudo pacman -S cachyos-gaming-meta
+2026-01-13 10:33:30 sudo pacman -S discord
+2026-01-13 10:23:51 sudo pacman -S hyprlauncher
+2026-01-13 10:22:36 wofi -drun
+2026-01-13 10:22:33 wofi --drun
+2026-01-13 10:15:37 sudo pacman -S code
+2026-01-13 10:13:45 sudo nano .config/hypr/hyprland.conf
