@@ -62,7 +62,7 @@ Phần này mô tả cách các đặc trưng hình ảnh ở mức thấp và m
 
 ### Các lớp mục tiêu (Cityscapes – 19 lớp)
 
-```text
+text
 road
 sidewalk
 building
