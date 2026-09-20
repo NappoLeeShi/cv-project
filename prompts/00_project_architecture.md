@@ -38,7 +38,7 @@ The system is designed to analyze street scenes using:
 # 2. Existing Architecture
 
 The current project structure is:
-
+```
 CV-PROJECT/
 │
 ├── data/
@@ -97,6 +97,7 @@ CV-PROJECT/
 ├── README.md
 ├── requirements.txt
 └── main.py
+```
 
 Treat this architecture as the baseline architecture.
 
